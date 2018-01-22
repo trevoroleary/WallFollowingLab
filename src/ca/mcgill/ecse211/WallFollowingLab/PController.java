@@ -3,6 +3,7 @@ package ca.mcgill.ecse211.WallFollowingLab;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class PController implements UltrasonicController {
+	//works
 
   /* Constants */
   private static final int MOTOR_SPEED = 200;
