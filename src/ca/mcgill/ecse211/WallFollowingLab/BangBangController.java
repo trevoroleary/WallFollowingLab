@@ -10,15 +10,10 @@ public class BangBangController implements UltrasonicController {
   private final int motorHigh;
   private int distance;
   
-  private int sensorAngle = -90;
-  private int counter = 0;
-  //private boolean gapSkip;
-  //private int count = 30;
-  
-  
   public BangBangController(int bandCenter, int bandwidth, int motorLow, int motorHigh) {
     // Default Constructor
     this.bandCenter = bandCenter;
+    bandCenter = 25;				//restating the bandcenter allowed us to have sperate bandcenters for each controller
     this.bandwidth = bandwidth;
     this.motorLow = motorLow;
     this.motorHigh = motorHigh;
@@ -33,58 +28,33 @@ public class BangBangController implements UltrasonicController {
   @Override
   public void processUSData(int distance) {
     this.distance = distance;
-    counter++;
-    int x = 3;
+    //This variable x is a multiplier to increase the speed if desired
+    int x = 1;
     // TODO: process a movement based on the us distance passed in (BANG-BANG style)
-	   
-    if(distance <= bandCenter - bandwidth) {
+	
+    //This if chain ensures that the robot does not approach the wall too closely
+    if(distance < 15) {										//This case is to prevent any collisions
+    	WallFollowingLab.rightMotor.setSpeed(motorLow);
+    	WallFollowingLab.leftMotor.setSpeed(motorLow);
+    	WallFollowingLab.rightMotor.backward();
+    }
+    else if(distance <= bandCenter - bandwidth) {			//This case occurs duing normal operation - if the robot is slightly too close its makes a correction outward
+    	WallFollowingLab.rightMotor.forward();
     	WallFollowingLab.rightMotor.setSpeed(x*motorLow);
     	WallFollowingLab.leftMotor.setSpeed(x*(motorHigh + 50));
     }
-    else if(distance >= bandCenter + bandwidth) {
+    else if(distance >= bandCenter + bandwidth) {			//If the robot is too far it will make a correction inwards to the wall
+    	WallFollowingLab.rightMotor.forward();
     	WallFollowingLab.rightMotor.setSpeed(x*motorHigh);
     	WallFollowingLab.leftMotor.setSpeed(x*(motorLow));
     }
-    else {
+    else {													//If the robot is within the bandwidth it proceeds in a stright manner
+    	WallFollowingLab.rightMotor.forward();
     	WallFollowingLab.rightMotor.setSpeed(x*motorHigh);
     	WallFollowingLab.leftMotor.setSpeed(x*motorHigh);
     }
     
-    /*
-    if(distance <= bandCenter - bandwidth) {
-	    	if(sensorAngle == -45) {
-	    		WallFollowingLab.sensorMotor.rotate(-45);
-	    		sensorAngle = -90;
-	    	}
-	    	WallFollowingLab.leftMotor.setSpeed(motorHigh + 50);
-	    	WallFollowingLab.rightMotor.setSpeed(motorLow - 10);
-	    }
-    
-    
-	    else if(distance >= 50 && sensorAngle == -90) {
-	    	if(sensorAngle == -90) {
-		    	WallFollowingLab.sensorMotor.rotate(45);
-		    	sensorAngle = -45;
-	    	}
-	    }
-	    else if(distance >= bandCenter + bandwidth) {
-	    	WallFollowingLab.rightMotor.setSpeed(motorHigh);
-	    	WallFollowingLab.leftMotor.setSpeed(motorLow);
-	    	if(sensorAngle == -45) {
-	    		WallFollowingLab.sensorMotor.rotate(-45);
-	    		sensorAngle = -90;
-	    	}
-	    }
-	    else {
-	    	if(sensorAngle == -45) {
-	    		WallFollowingLab.sensorMotor.rotate(-45);
-	    		sensorAngle = -90;
-	    	}
-	    	WallFollowingLab.leftMotor.setSpeed(motorHigh);
-	    	WallFollowingLab.rightMotor.setSpeed(motorHigh);
-	    }
-	    */
-    }
+  }
 
   @Override
   public int readUSDistance() {
