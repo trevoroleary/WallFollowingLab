@@ -24,7 +24,7 @@ public class BangBangController implements UltrasonicController {
     WallFollowingLab.sensorMotor.setSpeed(200);
     WallFollowingLab.sensorMotor.rotate(-45);
   }
-
+  
   @Override
   public void processUSData(int distance) {
     this.distance = distance;
